@@ -59,14 +59,16 @@ app.get('/views', function(req, res){
          message: "Sorry you provided the wrong info", type: "error"
       })
    } else {
+      console.log("coming into else!");
       let newPerson = new Person({
          name: personInfo.name,
          age:personInfo.age,
          nationality: personInfo.nationality
       })
 
-      const savedPerson = await newPerson.save().then((res)=>{
-         res.render("show_message", {message: "New person added", type: "success", person: personInfo})
+      const savedPerson = await newPerson.save().then((resp)=>{
+         console.log("saved person: ", {...personInfo});
+         res.render("show_message", {message: "New person added", type: "success", person: {...personInfo}})
 
 
       }).catch((error)=> {
@@ -79,6 +81,43 @@ app.get('/views', function(req, res){
  })
 
  
+ app.get("/people", (req, res)=>{
+   Person.find().then((resp)=>{
+      console.log("people:", resp);
+      res.json(resp)
+   })
+ })
+
+ app.put("/update-person/:id", (req, res)=>{
+   Person.findByIdAndUpdate(req.params.id, {name: "Auwal"}).then((resp)=>{
+      console.log("resp: ", resp)
+      res.json()
+   })
+ })
+
+ app.put("/update-people/:name", (req, res)=>{
+
+   Person.updateMany({name:req.params.name}, {name: "Sani"}).then((resp)=>{
+      console.log("updated!!")
+      res.json()
+   })
+ })
+
+ app.delete("/delete-person/:id", (req, res)=>{
+
+   Person.deleteOne({_id:req.params.id}).then((resp)=>{
+      console.log(resp)
+      console.log("deleted!!");
+      res.json()
+
+   })
+ })
+
+
+ 
+
+
+
 
  //Route handler
 //  app.use(function(req, res, next){
